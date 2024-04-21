@@ -22,30 +22,24 @@
 
 
 <body>
-
   <div>
-    <div class="create">
-      <a href="{% url 'add_post' %}" class="create">
-        Создать форму
-        <img class="mx-1" src="https://cdn-icons-png.flaticon.com/512/748/748113.png" width="24" height="24">
-      </a>
-    </div> 
-    <br>
-    <div>
-      <label for="court-filter">Выберите корт:</label>
-<select id="court-filter">
-  <option value="all" selected>Все корты</option>
-  <option value="ЛИДЕР">ЛИДЕР (Суходольский м-н, Восточный округ, Тюмень)</option>
-  <option value="Sofi-land">Sofi-land (Лесобазовская 8а/1 Тура м-н, Ленинский округ, Тюмень)</option>
-</select>
+    <div class = "choose">
+      <select>
+          <option selected disabled>Выбрать корт</option>
+          <option value="all">Все корты</option>
+          <option value="ЛИДЕР">ЛИДЕР (Суходольский м-н, Восточный округ, Тюмень)</option>
+          <option value="Sofi-land">Sofi-land (Лесобазовская 8а/1 Тура м-н, Ленинский округ, Тюмень)</option>
+      </select>
 
-<div id="selected-court"></div>
+      <div id="selected-court"></div>
 
-<label for="date-filter">Выберите дату:</label>
-<input type="date" id="date-filter">
+      {% comment %} <label for="date-filter">Выбрать дату:</label> {% endcomment %}
+      <input type="date" id="date-filter">
 
-<div id="selected-date"></div>
+      <div id="selected-date"></div>
 
+      <a href="{% url 'add_post' %}"><button id = "create">Создать объявление</button></a>
+    </div>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
       var cards = document.querySelectorAll('.otherforms');
@@ -88,30 +82,13 @@ document.getElementById('date-filter').addEventListener('input', filterCards);
       <div>
         {% for post in posts %}
         <div class="otherforms {% if post.court == 'ЛИДЕР' %} court-ЛИДЕР {% elif post.court == 'Sofi-land' %} court-Sofi-land {% endif %} hidden">
-    
-            <h3>{{ post.title }}</h3>
+            <p class = "time">{{ post.training_date }}, {{ post.training_time }}</p>  
+            <p>Корт: {{ post.court }}</p>    
+            <p>Пожелания: {{ post.preferences }}</p>           
+            {% comment %} <p class = "published"> от {{ post.published_at | date:"M d, Y" }}</p> {% endcomment %}
             {% if request.user.is_authenticated %}
               {% if request.user == post.author %}
-                <p><a href="{% url 'myposts' %}">{{ post.author.first_name }} {{ post.author.last_name }}</a></p>
-              {% else %}
-                <p><a href="{% url 'user_profile' post.author.id %}">{{ post.author.first_name }} {{ post.author.last_name }}</a></p>
-              {% endif %}
-            {% else %}
-              <p>{{ post.author.first_name }} {{ post.author.last_name }}</p>
-            {% endif %}
-            <p>Корт: {{ post.court }}</p>
-            <img src = "{% static 'img/event.png' %}" width = "70">
-            <p>Дата: {{ post.training_date }}</p>
-            <p>Время: {{ post.training_time }}</p>
-            
-            
-            <p>Пожелания: {{ post.preferences }}</p>
-            
-              
-            <small>{{ post.published_at | date:"M d, Y" }}</small>
-            {% if request.user.is_authenticated %}
-              {% if request.user == post.author %}
-                <p class="my">Мой пост</p>
+                {% comment %} <p class="my">Мой пост</p> {% endcomment %}
               {% else %}
                 <div class="people">
                   {% if request.user in post.responders.all %}
@@ -130,6 +107,18 @@ document.getElementById('date-filter').addEventListener('input', filterCards);
                 </div>
               {% endif %}
             {% endif %}
+            <div class = "user">
+              
+              {% if request.user.is_authenticated %}
+                {% if request.user == post.author %}
+                  <button><img src ="{% static 'img/user.findpartner.png' %}"><p><a href="{% url 'myposts' %}">{{ post.author.first_name }}<br/> {{ post.author.last_name }}</a></p></button>
+                {% else %}
+                  <button><img src ="{% static 'img/user.findpartner.png' %}"><p><a href="{% url 'user_profile' post.author.id %}">{{ post.author.first_name }}<br/> {{ post.author.last_name }}</a></p></button>
+                {% endif %}
+              {% else %}
+                <p>{{ post.author.first_name }} {{ post.author.last_name }}</p>
+              {% endif %}
+            </div>
           </div>
         {% endfor %}
       </div>
